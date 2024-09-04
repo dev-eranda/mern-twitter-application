@@ -12,17 +12,18 @@ const Sidebar = () => {
   const queryClient = useQueryClient();
 
   const { mutate: logoutMutation } = useMutation({
-    mutationFn: () =>
-      fetch("/api/auth/logout", {
+    mutationFn: () => {
+      const res = fetch("/api/auth/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-      }).then((response) => {
-        if (!response.ok) {
-          throw new Error("Logout failed");
-        }
-      }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Logout failed");
+      }
+    },
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
