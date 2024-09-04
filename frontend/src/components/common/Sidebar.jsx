@@ -10,29 +10,28 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const Sidebar = () => {
   const queryClient = useQueryClient();
+  const { mutate: logout } = useMutation({
+    mutationFn: async () => {
+      try {
+        const res = await fetch("/api/auth/logout", {
+          method: "POST",
+        });
+        const data = await res.json();
 
-  const { mutate: logoutMutation } = useMutation({
-    mutationFn: () => {
-      const res = fetch("/api/auth/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error("Logout failed");
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+      } catch (error) {
+        throw new Error(error);
       }
     },
-
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
-      toast.success("Logout successful");
     },
-
-    onError: () => toast.error("Logout failed"),
+    onError: () => {
+      toast.error("Logout failed");
+    },
   });
-
   const { data } = useQuery({ queryKey: ["authUser"] });
 
   return (
@@ -88,7 +87,7 @@ const Sidebar = () => {
                 className="w-5 h-5 cursor-pointer"
                 onClick={(e) => {
                   e.preventDefault();
-                  logoutMutation();
+                  logout();
                 }}
               />
             </div>
