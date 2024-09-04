@@ -7,6 +7,10 @@ export const signup = async (req, res) => {
     const { username, fullName, password, email } = req.body;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    if (!username || !fullName || !password || !email) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: "Invalid email format" });
     }
@@ -15,11 +19,11 @@ export const signup = async (req, res) => {
       $or: [{ username }, { email }],
     });
     if (existingUser) {
-      if (existingUser.username === username) {
-        return res.status(400).json({ error: "Username is already taken" });
-      }
       if (existingUser.email === email) {
         return res.status(400).json({ error: "Email is already taken" });
+      }
+      if (existingUser.username === username) {
+        return res.status(400).json({ error: "Username is already taken" });
       }
     }
 
