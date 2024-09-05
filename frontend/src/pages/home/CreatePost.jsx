@@ -2,6 +2,8 @@ import { CiImageOn } from "react-icons/ci";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { useRef, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 
 const CreatePost = () => {
   const [text, setText] = useState("");
@@ -9,16 +11,46 @@ const CreatePost = () => {
 
   const imgRef = useRef(null);
 
-  const isPending = false;
-  const isError = false;
+  const queryClient = useQueryClient();
 
-  const data = {
-    profileImg: "/avatars/boy1.png",
-  };
+  const { data } = useQuery({ queryKey: ["authUser"] });
+  const {
+    mutate: createPost,
+    isPending,
+    isError,
+    error,
+  } = useMutation({
+    mutationFn: async () => {
+      try {
+        const res = await fetch("/api/posts/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text, img }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong");
+        }
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+
+    onSuccess: () => {
+      setText("");
+      setImg(null);
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      toast.success("Post created successfully");
+    },
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Post created successfully");
+    createPost();
   };
 
   const handleImgChange = (e) => {
@@ -81,7 +113,7 @@ const CreatePost = () => {
             {isPending ? "Posting..." : "Post"}
           </button>
         </div>
-        {isError && <div className="text-red-500">Something went wrong</div>}
+        {isError && <div className="text-red-500">{error.message}</div>}
       </form>
     </div>
   );
