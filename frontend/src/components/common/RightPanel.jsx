@@ -1,16 +1,13 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { USERS_FOR_RIGHT_PANEL } from "../../utils/db/dummy";
-
-import RightPanelSkeleton from "../skeletons/RightPanelSkeleton";
 import { useQuery } from "@tanstack/react-query";
 
+import RightPanelSkeleton from "../skeletons/RightPanelSkeleton";
+import useFollow from "../../hooks/useFollow";
+import LoadingSpinner from "../common/LoadingSpinner";
+
 const RightPanel = () => {
-  const {
-    data: suggestedUsers,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
+  const { data: suggestedUsers, isLoading } = useQuery({
     queryKey: ["suggestedUsers"],
     queryFn: async () => {
       try {
@@ -28,7 +25,10 @@ const RightPanel = () => {
     },
   });
 
-  if (suggestedUsers?.length === 0) return <dev className="w-0 md:w-64"></dev>;
+  const { follow, isPending: isFollowLoading } = useFollow();
+  const [pendingUserId, setPendingUserId] = useState(null);
+
+  if (suggestedUsers?.length === 0) return <div className="w-0 md:w-64"></div>;
 
   return (
     <div className="hidden mx-2 my-4 lg:block">
@@ -68,8 +68,17 @@ const RightPanel = () => {
                 <div>
                   <button
                     className="text-black bg-white rounded-full btn hover:bg-white hover:opacity-90 btn-sm"
-                    onClick={(e) => e.preventDefault()}>
-                    Follow
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      setPendingUserId(user._id);
+                      await follow(user._id);
+                    }}
+                    disabled={isFollowLoading && pendingUserId === user._id}>
+                    {isFollowLoading && pendingUserId === user._id ? (
+                      <LoadingSpinner size="sm" />
+                    ) : (
+                      "Follow"
+                    )}
                   </button>
                 </div>
               </Link>
@@ -79,4 +88,5 @@ const RightPanel = () => {
     </div>
   );
 };
+
 export default RightPanel;
