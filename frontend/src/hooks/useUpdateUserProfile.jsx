@@ -32,7 +32,7 @@ const useUpdateUserProfle = () => {
           queryClient.invalidateQueries({ queryKey: ["userProfile"] }),
           queryClient.invalidateQueries({ queryKey: ["authUser"] }),
         ]);
-        toast.success("Profile update successfullt");
+        toast.success("Profile update successfully");
       },
 
       onError: (error) => {

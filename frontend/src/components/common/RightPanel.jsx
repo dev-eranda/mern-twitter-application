@@ -31,9 +31,9 @@ const RightPanel = () => {
   if (suggestedUsers?.length === 0) return <div className="w-0 md:w-64"></div>;
 
   return (
-    <div className="hidden mx-2 my-4 lg:block">
-      <div className="bg-[#16181C] p-4 rounded-md sticky top-2">
-        <p className="font-bold">Who to follow</p>
+    <div className="hidden px-2 my-4 lg:block">
+      <div className="bg-[#16181C] px-8 py-4 rounded-md sticky top-2">
+        <p className="mb-5 font-bold">Who to follow</p>
         <div className="flex flex-col gap-4">
           {/* item */}
           {isLoading && (

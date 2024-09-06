@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { IoClose } from "react-icons/io5";
 import useUpdateUserProfle from "../../hooks/useUpdateUserProfile";
 
 const EditProfileModal = ({ authUser }) => {
@@ -42,7 +43,16 @@ const EditProfileModal = ({ authUser }) => {
       </button>
       <dialog id="edit_profile_modal" className="modal">
         <div className="border border-gray-700 rounded-md shadow-md modal-box">
-          <h3 className="my-3 text-lg font-bold">Update Profile</h3>
+          <div className="flex flex-row items-center justify-between">
+            <h3 className="my-3 text-lg font-bold">Edit Profile</h3>
+            <IoClose
+              className="flex items-center justify-center w-6 h-6 p-1 text-black transition duration-200 bg-gray-200 border-none rounded-full cursor-pointer hover:bg-gray-300"
+              onClick={() =>
+                document.getElementById("edit_profile_modal").close()
+              }>
+              Hello
+            </IoClose>
+          </div>
           <form
             className="flex flex-col gap-4"
             onSubmit={(e) => {
@@ -111,9 +121,9 @@ const EditProfileModal = ({ authUser }) => {
               onChange={handleInputChange}
             />
             <button
-              className="text-white rounded-full btn btn-primary btn-sm"
+              className="text-black bg-white rounded-full btn hover:bg-white hover:opacity-90 btn-sm"
               disabled={isProfileUpdating}>
-              {isProfileUpdating ? "Updating..." : "Update"}
+              {isProfileUpdating ? "Saving..." : "Save"}
             </button>
           </form>
         </div>

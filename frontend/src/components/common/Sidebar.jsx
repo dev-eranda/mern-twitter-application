@@ -70,13 +70,13 @@ const Sidebar = () => {
         {data && (
           <Link
             to={`/profile/${data.username}`}
-            className="mt-auto mb-10 flex gap-2 items-start transition-all duration-300 hover:bg-[#181818] py-2 px-4 rounded-full">
-            <div className="hidden avatar md:inline-flex">
+            className="mt-auto mb-10 flex gap-2 items-center transition-all duration-300 hover:bg-[#181818] py-2 px-4 rounded-full ">
+            <div className="items-center hidden avatar md:inline-flex ">
               <div className="w-8 rounded-full">
                 <img src={data?.profileImg || "/avatar-placeholder.png"} />
               </div>
             </div>
-            <div className="flex justify-between flex-1">
+            <div className="flex items-center justify-between flex-1">
               <div className="hidden md:block">
                 <p className="w-20 text-sm font-bold text-white truncate">
                   {data?.fullName}
@@ -84,7 +84,7 @@ const Sidebar = () => {
                 <p className="text-sm text-slate-500">@{data?.username}</p>
               </div>
               <BiLogOut
-                className="w-5 h-5 cursor-pointer"
+                className="w-5 h-5 cursor-pointer "
                 onClick={(e) => {
                   e.preventDefault();
                   logout();
