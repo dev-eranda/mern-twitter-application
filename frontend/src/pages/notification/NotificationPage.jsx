@@ -4,6 +4,7 @@ import { FaUser } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa6";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
+import { formatPostDate } from "../../utils/date";
 
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 
@@ -80,38 +81,64 @@ const NotificationPage = () => {
         {notifications?.length === 0 && (
           <div className="p-4 font-bold text-center">No notifications</div>
         )}
+
         {notifications?.map((notification) => (
-          <div className="border-b border-gray-700" key={notification._id}>
-            <div className="gap-2 p-4">
-              <Link
-                to={`/profile/${notification.from.username}`}
-                className="flex flex-row items-center gap-2">
-                <div className="avatar">
-                  <div className="w-8 rounded-full">
+          <div className="p-4 border-b border-gray-700" key={notification._id}>
+            <Link to={`/profile/${notification.from.username}`}>
+              <div className="flex items-center w-full gap-4 mb-2 ">
+                {/* <div className="avatar">
+                  <div className="rounded-full size-10">
                     <img
                       src={
                         notification.from.profileImg ||
                         "/avatar-placeholder.png"
                       }
+                      className="abosolute"
                     />
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-bold">
-                    @{notification.from.username}
-                  </span>{" "}
-                  {notification.type === "follow"
-                    ? "followed you"
-                    : "liked your post"}
                   {notification.type === "follow" && (
-                    <FaUser className="w-4 h-4 text-primary" />
+                    <FaUser className="relative w-4 h-4 text-primary" />
                   )}
                   {notification.type === "like" && (
-                    <FaHeart className="w-4 h-4 text-red-500" />
+                    <FaHeart className="relative w-4 h-4 ml-[-10] text-red-500" />
+                  )}
+                </div> */}
+                <div className="relative inline-block avatar">
+                  <div className="w-10 h-10 overflow-hidden rounded-full">
+                    <img
+                      src={
+                        notification.from.profileImg ||
+                        "/avatar-placeholder.png"
+                      }
+                      className="object-cover w-full h-full"
+                      alt="Profile"
+                    />
+                  </div>
+                  {notification.type === "follow" && (
+                    <FaUser className="absolute bottom-0 right-0 w-6 h-6 p-1 text-white bg-blue-500 border border-gray-300 rounded-full" />
+                  )}
+                  {notification.type === "like" && (
+                    <FaHeart className="absolute bottom-0 right-0 w-6 h-6 p-1 text-white bg-red-500 border border-gray-300 rounded-full" />
                   )}
                 </div>
-              </Link>
-            </div>
+
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold">
+                      @{notification.from.username}
+                    </span>
+                    {notification.type === "follow"
+                      ? "followed you"
+                      : "liked your post"}
+                  </div>
+                  <div className="items-center">
+                    <span className="text-sm font-bold text-blue-400">
+                      {formatPostDate(notification?.createdAt)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Link>
           </div>
         ))}
       </div>

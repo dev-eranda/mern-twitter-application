@@ -1,28 +1,29 @@
 export const formatPostDate = (createdAt) => {
-  const currentDate = new Date();
   const createdAtDate = new Date(createdAt);
+  const currentDate = new Date();
 
-  const timeDifferenceInSeconds = Math.floor(
-    (currentDate - createdAtDate) / 1000
-  );
-  const timeDifferenceInMinutes = Math.floor(timeDifferenceInSeconds / 60);
-  const timeDifferenceInHours = Math.floor(timeDifferenceInMinutes / 60);
-  const timeDifferenceInDays = Math.floor(timeDifferenceInHours / 24);
+  // Check if the date is valid
+  if (isNaN(createdAtDate)) return "Invalid date";
 
-  if (timeDifferenceInDays > 1) {
+  const diffInSeconds = Math.floor((currentDate - createdAtDate) / 1000);
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+
+  if (diffInDays > 1) {
+    // Return a formatted date for posts older than a day
     return createdAtDate.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     });
-  } else if (timeDifferenceInDays === 1) {
-    return "1d";
-  } else if (timeDifferenceInHours >= 1) {
-    return `${timeDifferenceInHours}h`;
-  } else if (timeDifferenceInMinutes >= 1) {
-    return `${timeDifferenceInMinutes}m`;
-  } else {
-    return "Just now";
   }
+
+  if (diffInDays === 1) return "1d ago";
+  if (diffInHours >= 1) return `${diffInHours}h ago`;
+  if (diffInMinutes >= 1) return `${diffInMinutes}m ago`;
+  if (diffInSeconds >= 1) return `${diffInSeconds}s ago`;
+
+  return "Just now";
 };
 
 export const formatMemberSinceDate = (createdAt) => {
