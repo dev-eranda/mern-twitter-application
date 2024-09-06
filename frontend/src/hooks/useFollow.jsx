@@ -15,15 +15,22 @@ const useFollow = () => {
       });
 
       const data = await res.json();
+
       if (!res.ok) {
         throw new Error(data.error || "Something went wrong");
       }
+      return data;
     },
 
-    onSuccess: () => {
+    onSuccess: (following) => {
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["suggestedUsers"] }),
-        queryClient.invalidateQueries({ queryKey: ["authUser"] }),
+        queryClient.setQueryData(["authUser"], (oldData) => {
+          return {
+            ...oldData,
+            following,
+          };
+        }),
       ]);
     },
 

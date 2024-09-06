@@ -5,19 +5,16 @@ import Posts from "../../components/common/Posts";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "./EditProfileModal";
 
-import { POSTS } from "../../utils/db/dummy";
-
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
-import {
-  useQuery,
-  useMutation,
-  QueryClient,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatMemberSinceDate } from "../../utils/date";
+import { toast } from "react-hot-toast";
+
+import useFollow from "../../hooks/useFollow";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
 
 const ProfilePage = () => {
   const [coverImg, setCoverImg] = useState(null);
@@ -28,9 +25,11 @@ const ProfilePage = () => {
   const profileImgRef = useRef(null);
 
   const queryClient = useQueryClient();
+  const { follow, isPending: isFollowPEnding } = useFollow();
 
   const { username } = useParams();
-  // const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+  const { data: posts } = useQuery({ queryKey: ["posts"] });
 
   const {
     data: user,
@@ -53,9 +52,45 @@ const ProfilePage = () => {
     },
   });
 
-  console.log(user);
+  const { mutateAsync: updateProfile, isPending: isProfileUpdating } =
+    useMutation({
+      mutationFn: async () => {
+        try {
+          const res = await fetch("/api/users/update", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ profileImg, coverImg }),
+          });
+
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.error || "Something went wrong");
+          }
+
+          return data;
+        } catch (error) {
+          throw new Error(error);
+        }
+      },
+
+      onSuccess: () => {
+        Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["userProfile"] }),
+          queryClient.invalidateQueries({ queryKey: ["authUser"] }),
+        ]);
+        toast.success("Profile update successfullt");
+      },
+
+      onError: () => {
+        toast.error("Profile update failed. Try again.");
+      },
+    });
+
   const memberSinceDate = formatMemberSinceDate(user?.createdAt);
-  const isMyProfile = false;
+  const isMyProfile = authUser?._id === user?._id;
+  const isFollowing = authUser?.following.includes(user?._id);
 
   const handleImgChange = (e, state) => {
     const file = e.target.files[0];
@@ -91,7 +126,7 @@ const ProfilePage = () => {
                 <div className="flex flex-col">
                   <p className="text-lg font-bold">{user?.fullName}</p>
                   <span className="text-sm text-slate-500">
-                    {POSTS?.length} posts
+                    {posts?.length} posts
                   </span>
                 </div>
               </div>
@@ -144,19 +179,25 @@ const ProfilePage = () => {
                 </div>
               </div>
               <div className="flex justify-end px-4 mt-5">
-                {isMyProfile && <EditProfileModal />}
+                {isMyProfile && <EditProfileModal authUser={authUser} />}
                 {!isMyProfile && (
                   <button
                     className="rounded-full btn btn-outline btn-sm"
-                    onClick={() => alert("Followed successfully")}>
-                    Follow
+                    onClick={async () => {
+                      await follow(user._id);
+                    }}
+                    disabled={isFollowPEnding}>
+                    {isFollowPEnding && <LoadingSpinner />}
+                    {!isFollowPEnding && isFollowing && "Unfollow"}
+                    {!isFollowPEnding && !isFollowing && "Follow"}
                   </button>
                 )}
                 {(coverImg || profileImg) && (
                   <button
                     className="px-4 ml-2 text-white rounded-full btn btn-primary btn-sm"
-                    onClick={() => alert("Profile updated successfully")}>
-                    Update
+                    onClick={() => updateProfile()}
+                    disabled={isProfileUpdating}>
+                    {isProfileUpdating ? "Updating..." : "Update"}
                   </button>
                 )}
               </div>

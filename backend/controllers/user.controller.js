@@ -38,23 +38,31 @@ export const followUnfollowUser = async (req, res) => {
     const isFollowing = currentUser.following.includes(id);
     if (isFollowing) {
       //unfollow
-      await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
-      await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
-      res.status(200).json({ message: "User unfollowed successfully" });
+      await Promise.all([
+        User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } }),
+        User.findByIdAndUpdate(req.user._id, { $pull: { following: id } }),
+      ]);
+
+      const followingUsers = currentUser.following.filter(
+        (followinfId) => followinfId.toString() !== id
+      );
+
+      res.status(200).json(followingUsers);
     } else {
       //follow
-      await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
-      await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
+      await Promise.all([
+        User.findByIdAndUpdate(id, { $push: { followers: req.user._id } }),
+        User.findByIdAndUpdate(req.user._id, { $push: { following: id } }),
+        new Notification({
+          from: req.user._id,
+          to: userToModify._id,
+          type: "follow",
+        }).save(),
+      ]);
 
-      const notification = new Notification({
-        from: req.user._id,
-        to: userToModify._id,
-        type: "follow",
-      });
+      currentUser.following.push(id);
 
-      await notification.save();
-
-      return res.status(200).json({ message: "User followed successfully" });
+      return res.status(200).json(currentUser.following);
     }
   } catch (error) {
     console.error("Error in followUnfollowUser controller", error.message);
@@ -79,7 +87,7 @@ export const getSuggestedUsers = async (req, res) => {
     const filterUsers = users.filter(
       (user) => !usersFollowedByMe.following.includes(user._id)
     );
-    const suggestedUsers = filterUsers.slice(0, 4);
+    const suggestedUsers = filterUsers.slice(0, 10);
     suggestedUsers.forEach((user) => (user.password = undefined));
 
     return res.status(200).json(suggestedUsers);
@@ -106,6 +114,21 @@ export const updateUserProfile = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if username or email already exists, excluding the current user by id
+    const existingUser = await User.findOne({
+      $or: [{ username }, { email }],
+      _id: { $ne: userId }, // Exclude the current user from this search
+    });
+
+    if (existingUser) {
+      if (existingUser.email === email) {
+        return res.status(400).json({ error: "Email is already taken" });
+      }
+      if (existingUser.username === username) {
+        return res.status(400).json({ error: "Username is already taken" });
+      }
     }
 
     if (
