@@ -49,7 +49,7 @@ export const followUnfollowUser = async (req, res) => {
       const notification = new Notification({
         from: req.user._id,
         to: userToModify._id,
-        type: "like",
+        type: "follow",
       });
 
       await notification.save();

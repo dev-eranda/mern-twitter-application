@@ -5,7 +5,7 @@ const useFollow = () => {
   const queryClient = useQueryClient();
 
   const {
-    mutate: follow,
+    mutateAsync: follow,
     isPending,
     error,
   } = useMutation({

@@ -72,7 +72,7 @@ const RightPanel = () => {
                       e.preventDefault();
                       setPendingUserId(user._id);
                       await follow(user._id);
-                      // setPendingUserId(null);
+                      setPendingUserId(null);
                     }}
                     disabled={isFollowLoading && pendingUserId === user._id}>
                     {isFollowLoading && pendingUserId === user._id ? (
