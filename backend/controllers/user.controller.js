@@ -171,8 +171,8 @@ export const updateUserProfile = async (req, res) => {
 
     if (coverImg) {
       if (user.coverImg) {
-        await cloudinary.uploader.distroy(
-          user.coverImg.slice("/").pop().split(".")[0]
+        await cloudinary.uploader.destroy(
+          user.coverImg.split("/").pop().split(".")[0]
         );
       }
 

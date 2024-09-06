@@ -9,12 +9,12 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { formatMemberSinceDate } from "../../utils/date";
-import { toast } from "react-hot-toast";
 
 import useFollow from "../../hooks/useFollow";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
+import useUpdateUserProfle from "../../hooks/useUpdateUserProfile";
 
 const ProfilePage = () => {
   const [coverImg, setCoverImg] = useState(null);
@@ -24,8 +24,8 @@ const ProfilePage = () => {
   const coverImgRef = useRef(null);
   const profileImgRef = useRef(null);
 
-  const queryClient = useQueryClient();
   const { follow, isPending: isFollowPEnding } = useFollow();
+  const { updateProfile, isProfileUpdating } = useUpdateUserProfle();
 
   const { username } = useParams();
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
@@ -51,42 +51,6 @@ const ProfilePage = () => {
       }
     },
   });
-
-  const { mutateAsync: updateProfile, isPending: isProfileUpdating } =
-    useMutation({
-      mutationFn: async () => {
-        try {
-          const res = await fetch("/api/users/update", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ profileImg, coverImg }),
-          });
-
-          const data = await res.json();
-          if (!res.ok) {
-            throw new Error(data.error || "Something went wrong");
-          }
-
-          return data;
-        } catch (error) {
-          throw new Error(error);
-        }
-      },
-
-      onSuccess: () => {
-        Promise.all([
-          queryClient.invalidateQueries({ queryKey: ["userProfile"] }),
-          queryClient.invalidateQueries({ queryKey: ["authUser"] }),
-        ]);
-        toast.success("Profile update successfullt");
-      },
-
-      onError: () => {
-        toast.error("Profile update failed. Try again.");
-      },
-    });
 
   const memberSinceDate = formatMemberSinceDate(user?.createdAt);
   const isMyProfile = authUser?._id === user?._id;
@@ -195,7 +159,11 @@ const ProfilePage = () => {
                 {(coverImg || profileImg) && (
                   <button
                     className="px-4 ml-2 text-white rounded-full btn btn-primary btn-sm"
-                    onClick={() => updateProfile()}
+                    onClick={async () => {
+                      await updateProfile({ profileImg, coverImg });
+                      setProfileImg(null);
+                      setCoverImg(null);
+                    }}
                     disabled={isProfileUpdating}>
                     {isProfileUpdating ? "Updating..." : "Update"}
                   </button>
@@ -217,11 +185,11 @@ const ProfilePage = () => {
                       <>
                         <FaLink className="w-3 h-3 text-slate-500" />
                         <a
-                          href="https://youtube.com/@asaprogrammer_"
+                          href={`https://${user.link}`}
                           target="_blank"
                           rel="noreferrer"
                           className="text-sm text-blue-500 hover:underline">
-                          youtube.com/@asaprogrammer_
+                          {user.link}
                         </a>
                       </>
                     </div>
