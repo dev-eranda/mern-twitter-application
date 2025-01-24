@@ -46,4 +46,4 @@ CLOUDINARY_API_SECRET = your_cloudinary_api_secret
    ```sh
    npm start
 
-  - **Open [http://localhost:3000](http://localhost:5173) with your browser to see the result.**
+  - **Open [http://localhost:5173](http://localhost:5173) with your browser to see the result.**
