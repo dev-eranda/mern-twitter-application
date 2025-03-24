@@ -3,23 +3,23 @@
 <hr />
 
 ## Project Backgroud and Overview
-This project is a full-stack social media platform built with a modern tech stack, including React.js, Node.js, Express, MongoDB, and Tailwind, to provide users with an interactive and personalized experience. Key features include secure authentication with JWT, image uploads via Cloudinary, and efficient data fetching using React Query, enabling functionalities like creating, liking, commenting on posts, editing profiles, and following users. 
+This repository contains a full-stack social media platform built with React.js, Node.js, Express, MongoDB, and Tailwind. It offers an interactive and personalized experience, featuring secure JWT authentication, image uploads via Cloudinary, and efficient data fetching with React Query. Key functionalities include creating, liking, and commenting on posts, editing profiles, and following users
 <hr />
 
 ## Project Goals
 The main objectives of this application are to:
 
-1. Implement secure user authentication using JSON Web Tokens (JWT).
-2. Provide full post management functionality, including creating, deleting, liking, and commenting.
-3. Enable profile customization with options to edit details and upload images.
-4. Ensure efficient data fetching and caching with React Query for optimal performance.
-5. Enhance user engagement with suggested users and real-time notifications.
+1. Implement secure user authentication using JSON Web Tokens (JWT)
+2. Provide full post management functionality, including creating, deleting, liking, and commenting
+3. Enable profile customization with options to edit details and upload images
+4. Ensure efficient data fetching and caching with React Query for optimal performance
+5. Enhance user engagement with suggested users and real-time notifications
 <hr />
 
 ## Technical Details
 Core technologies used: 
 
-- **React.js, JavaScript, Tailwind CSS, MongoDB, Node.js, Express, JSON Web Token**
+- **MongoDB, Express, ReactJS, Node.js JavaScript, Tailwind CSS, JSON Web Token**
 <hr />
 
 ## Configuration
