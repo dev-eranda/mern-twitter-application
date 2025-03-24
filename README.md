@@ -1,15 +1,15 @@
 # Twitter Clone Application
-**Developed By:** Eranda Samarasinghe
+**Developed by:** Eranda Samarasinghe
 <hr />
 
-## Project Backgroud and Overview
-This repository contains a full-stack social media platform built with React.js, Node.js, Express, MongoDB, and Tailwind. It offers an interactive and personalized experience, featuring secure JWT authentication, image uploads via Cloudinary, and efficient data fetching with React Query. Key functionalities include creating, liking, and commenting on posts, editing profiles, and following users
+## Project Background and Overview
+This repository contains a full-stack social media platform built with React, Node.js, Express, MongoDB, and Tailwind. It offers an interactive and personalized experience, featuring secure JWT authentication, image uploads via Cloudinary, and efficient data fetching with React Query. Key functionalities include creating, liking, and commenting on posts, editing profiles, and following users
 <hr />
 
 ## Project Goals
 The main objectives of this application are to:
 
-1. Implement secure user authentication using JSON Web Tokens (JWT)
+1. Implement secure user authentication using JWT
 2. Provide full post management functionality, including creating, deleting, liking, and commenting
 3. Enable profile customization with options to edit details and upload images
 4. Ensure efficient data fetching and caching with React Query for optimal performance
@@ -19,7 +19,7 @@ The main objectives of this application are to:
 ## Technical Details
 Core technologies used: 
 
-- **MongoDB, Express, ReactJS, Node.js JavaScript, Tailwind CSS, JSON Web Token**
+- **MongoDB, Express, React, Node.js JavaScript, Tailwind CSS, JWT**
 <hr />
 
 ## Configuration
